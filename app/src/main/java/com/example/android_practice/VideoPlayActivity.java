@@ -193,8 +193,8 @@ public class VideoPlayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_play);
 
-        mPlayPauseButton = (ImageButton) findViewById(R.id.videoPlayPauseButton);
-        mSurfaceView = (SurfaceView) findViewById(R.id.videoSurfaceView);
+        mPlayPauseButton = (ImageButton) findViewById(R.id.videoPlayPauseButton2);
+        mSurfaceView = (SurfaceView) findViewById(R.id.videoSurfaceView2);
 
         Intent callingIntent = this.getIntent();
         if(callingIntent != null) {

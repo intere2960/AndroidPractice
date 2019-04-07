@@ -8,7 +8,7 @@
     tools:context=".VideoPlayActivity">
 
     <SurfaceView
-        android:id="@+id/videoSurfaceView"
+        android:id="@+id/videoSurfaceView2"
         android:layout_width="387dp"
         android:layout_height="387dp"
         android:layout_marginStart="16dp"
@@ -19,13 +19,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/videoPlayPauseButton"
+        android:id="@+id/videoPlayPauseButton2"
         android:onClick="playPauseClick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        app:layout_constraintRight_toRightOf="@+id/videoSurfaceView"
-        app:layout_constraintLeft_toLeftOf="@+id/videoSurfaceView"
-        app:layout_constraintTop_toBottomOf="@+id/videoSurfaceView"
+        app:layout_constraintRight_toRightOf="@+id/videoSurfaceView2"
+        app:layout_constraintLeft_toLeftOf="@+id/videoSurfaceView2"
+        app:layout_constraintTop_toBottomOf="@+id/videoSurfaceView2"
         app:srcCompat="@mipmap/ic_media_play" />
 </android.support.constraint.ConstraintLayout>

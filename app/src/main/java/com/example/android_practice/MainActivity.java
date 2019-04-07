@@ -26,6 +26,8 @@ public class MainActivity extends AppCompatActivity
 
     private  final static int READ_EXTERNAL_STORAGE_PERMISSION_RESULT = 0;
     private  final static int MEDIASTORE_LOADER_ID = 0;
+    private final static String TYPE = "type";
+    private final static String URI = "uri";
     private RecyclerView mThumbnailRecyclerView;
     private MediaStoreAdapter mMediaStoreAdapter;
 
@@ -115,15 +117,20 @@ public class MainActivity extends AppCompatActivity
     public void OnClickImage(Uri imageUri) {
         // Toast.makeText(MainActivity.this, "Image uri = " + imageUri.toString(), Toast.LENGTH_SHORT).show();
         Intent fullScreenIntent = new Intent(this, FullScreenImageActivity.class);
-        fullScreenIntent.setData(imageUri);
+        //fullScreenIntent.setData(imageUri);
+        fullScreenIntent.putExtra(TYPE, "image");
+        fullScreenIntent.putExtra(URI, imageUri);
         startActivity(fullScreenIntent);
     }
 
     @Override
     public void OnClickVideo(Uri videoUri) {
         // Toast.makeText(MainActivity.this, "Video uri = " + videoUri.toString(), Toast.LENGTH_SHORT).show();
-        Intent videoPlayIntent = new Intent(this, VideoPlayActivity.class);
-        videoPlayIntent.setData(videoUri);
+        //Intent videoPlayIntent = new Intent(this, VideoPlayActivity.class);
+        Intent videoPlayIntent = new Intent(this, FullScreenImageActivity.class);
+        //videoPlayIntent.setData(videoUri);
+        videoPlayIntent.putExtra(TYPE, "video");
+        videoPlayIntent.putExtra(URI, videoUri);
         startActivity(videoPlayIntent);
     }
 }
