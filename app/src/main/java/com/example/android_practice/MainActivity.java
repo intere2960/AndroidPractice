@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity
 
         mThumbnailRecyclerView = (RecyclerView) findViewById(R.id.thumbnailRecyclerView);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
+        // mThumbnailRecyclerView.addItemDecoration(new GridDivider(mThumbnailRecyclerView.getContext(), 3));
+        // mThumbnailRecyclerView.addItemDecoration(new GridDivider(gridLayoutManager));
         mThumbnailRecyclerView.setLayoutManager(gridLayoutManager);
         /*LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayout.HORIZONTAL, false);
         mThumbnailRecyclerView.setLayoutManager(linearLayoutManager);*/
@@ -118,7 +120,7 @@ public class MainActivity extends AppCompatActivity
         // Toast.makeText(MainActivity.this, "Image uri = " + imageUri.toString(), Toast.LENGTH_SHORT).show();
         Intent fullScreenIntent = new Intent(this, FullScreenImageActivity.class);
         //fullScreenIntent.setData(imageUri);
-        fullScreenIntent.putExtra(TYPE, "image");
+        fullScreenIntent.putExtra(TYPE, FullScreenImageActivity.TYPE_IMAGE);
         fullScreenIntent.putExtra(URI, imageUri);
         startActivity(fullScreenIntent);
     }
@@ -129,7 +131,7 @@ public class MainActivity extends AppCompatActivity
         //Intent videoPlayIntent = new Intent(this, VideoPlayActivity.class);
         Intent videoPlayIntent = new Intent(this, FullScreenImageActivity.class);
         //videoPlayIntent.setData(videoUri);
-        videoPlayIntent.putExtra(TYPE, "video");
+        videoPlayIntent.putExtra(TYPE, FullScreenImageActivity.TYPE_VIDEO);
         videoPlayIntent.putExtra(URI, videoUri);
         startActivity(videoPlayIntent);
     }

@@ -1,6 +1,8 @@
 package com.example.android_practice;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -41,10 +43,13 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 
 public class FullScreenImageActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<Cursor>, MediaPageAdapter.OnClickThumbListener{
+        implements LoaderManager.LoaderCallbacks<Cursor>, MediaPageAdapter.OnClickThumbListener, View.OnClickListener{
 
-    private  final static int READ_EXTERNAL_STORAGE_PERMISSION_RESULT = 0;
-    private  final static int MEDIASTORE_LOADER_ID = 0;
+    private final static int READ_EXTERNAL_STORAGE_PERMISSION_RESULT = 0;
+    private final static int MEDIASTORE_LOADER_ID = 0;
+    public static final int TYPE_IMAGE = 1;
+    public static final int TYPE_VIDEO = 2;
+
     private final static String TYPE = "type";
     private final static String URI = "uri";
     private RecyclerView mThumbnailRecyclerView;
@@ -52,7 +57,7 @@ public class FullScreenImageActivity extends AppCompatActivity
 
     private static final String TAG = "VideoPlayActivity";
 
-    String type;
+    int type = TYPE_IMAGE;
     Uri uri;
 
     private MediaPlayer mMediaPlayer;
@@ -81,6 +86,32 @@ public class FullScreenImageActivity extends AppCompatActivity
     };
     private PlaybackStateCompat.Builder mPBuilder;
     private MediaSessionCompat mSession;
+
+    @Override
+    public void onClick(View v) {
+        if (mThumbnailRecyclerView.getVisibility() == View.GONE) {
+            mThumbnailRecyclerView.animate()
+                    .translationY(0).alpha(1.0f)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            //super.onAnimationStart(animation);
+                            mThumbnailRecyclerView.setVisibility(View.VISIBLE);
+                        }
+                    });
+        } else {
+            mThumbnailRecyclerView.animate()
+                    .translationY(mThumbnailRecyclerView.getHeight()).alpha(0.0f)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            //super.onAnimationEnd(animation);
+                            mThumbnailRecyclerView.setVisibility(View.GONE);
+                        }
+                    });
+        }
+    }
+
     private class MediaSessionCallback extends MediaSessionCompat.Callback implements SurfaceHolder.Callback, MediaPlayer.OnCompletionListener,
             AudioManager.OnAudioFocusChangeListener {
 
@@ -251,13 +282,13 @@ public class FullScreenImageActivity extends AppCompatActivity
         Intent callingActivityIntent = getIntent();
         if(callingActivityIntent != null) {
 
-            type = callingActivityIntent.getExtras().getString(TYPE);
+            type = callingActivityIntent.getExtras().getInt(TYPE);
             uri = callingActivityIntent.getExtras().getParcelable(URI);
 
             mPlayPauseButton = (ImageButton) findViewById(R.id.videoPlayPauseButton);
             mSurfaceView = (SurfaceView) findViewById(R.id.videoSurfaceView);
 
-            if(type.equals("image")) {
+            if(type == TYPE_IMAGE) {
                 if (uri != null && fullScreenImageView != null) {
                     Glide.with(this)
                             .load(uri)
@@ -268,22 +299,27 @@ public class FullScreenImageActivity extends AppCompatActivity
                 }
             }
             else {
-                mSession = new MediaSessionCompat(this, TAG);
-                mSession.setCallback(new MediaSessionCallback(this));
-                mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
-                mPBuilder = new PlaybackStateCompat.Builder();
-                mController = new MediaControllerCompat(this, mSession);
-                mControllerTransportControls = mController.getTransportControls();
+                CreateMediaSession();
             }
         }
 
-//        mThumbnailRecyclerView = (RecyclerView) findViewById(R.id.smallthumbnailRecyclerView);
-//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayout.HORIZONTAL, false);
-//        mThumbnailRecyclerView.setLayoutManager(linearLayoutManager);
-//        mMediaPageAdapter = new MediaPageAdapter(this);
-//        mThumbnailRecyclerView.setAdapter(mMediaPageAdapter);
-//
-//        checkReadExternalStoragePermission();
+        mThumbnailRecyclerView = (RecyclerView) findViewById(R.id.smallthumbnailRecyclerView);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayout.HORIZONTAL, false);
+        mThumbnailRecyclerView.setLayoutManager(linearLayoutManager);
+        mMediaPageAdapter = new MediaPageAdapter(this);
+        mThumbnailRecyclerView.setAdapter(mMediaPageAdapter);
+        mThumbnailRecyclerView.setAlpha(0.8f);
+
+        checkReadExternalStoragePermission();
+    }
+
+    private void CreateMediaSession() {
+        mSession = new MediaSessionCompat(this, TAG);
+        mSession.setCallback(new MediaSessionCallback(this));
+        mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        mPBuilder = new PlaybackStateCompat.Builder();
+        mController = new MediaControllerCompat(this, mSession);
+        mControllerTransportControls = mController.getTransportControls();
     }
 
     @Override
@@ -358,11 +394,62 @@ public class FullScreenImageActivity extends AppCompatActivity
         /*Intent fullScreenIntent = new Intent(this, FullScreenImageActivity.class);
         fullScreenIntent.setData(imageUri);
         startActivity(fullScreenIntent);*/
+
+        uri = imageUri;
+
+        if(type == TYPE_VIDEO) {
+            mControllerTransportControls.pause();
+            mController.unregisterCallback(mControllerCallback);
+            if (mController.getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING ||
+                    mController.getPlaybackState().getState() == PlaybackStateCompat.STATE_PAUSED) {
+                mControllerTransportControls.stop();
+            }
+            mSession.release();
+
+            if(mPlayPauseButton == null || mSurfaceView == null) {
+                mPlayPauseButton = (ImageButton) findViewById(R.id.videoPlayPauseButton);
+                mSurfaceView = (SurfaceView) findViewById(R.id.videoSurfaceView);
+            }
+
+            mPlayPauseButton.setVisibility(View.GONE);
+            mSurfaceView.setVisibility(View.GONE);
+        }
+
         ImageView fullScreenImageView = (ImageView) findViewById(R.id.fullScreenImageView);
         if(imageUri != null && fullScreenImageView != null) {
             Glide.with(this)
-                    .load(imageUri)
+                    .load(uri)
                     .into(fullScreenImageView);
+
+            if(type != TYPE_IMAGE) {
+                type = TYPE_IMAGE;
+                fullScreenImageView.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    @Override
+    public void OnClickVideo(Uri videoUri) {
+        uri = videoUri;
+
+        if(type != TYPE_VIDEO) {
+            type = TYPE_VIDEO;
+
+            findViewById(R.id.fullScreenImageView).setVisibility(View.GONE);
+
+            CreateMediaSession();
+
+            mController.registerCallback(mControllerCallback);
+            mPBuilder.setActions(PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PLAY_PAUSE);
+            mSession.setPlaybackState(mPBuilder.build());
+
+            if(mPlayPauseButton == null || mSurfaceView == null) {
+                mPlayPauseButton = (ImageButton) findViewById(R.id.videoPlayPauseButton);
+                mSurfaceView = (SurfaceView) findViewById(R.id.videoSurfaceView);
+            }
+
+            mPlayPauseButton.setVisibility(View.VISIBLE);
+            mSurfaceView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -379,7 +466,7 @@ public class FullScreenImageActivity extends AppCompatActivity
 
     @Override
     protected void onStop() {
-        if(type.equals("video")) {
+        if(type == TYPE_VIDEO) {
             mController.unregisterCallback(mControllerCallback);
             if (mController.getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING ||
                     mController.getPlaybackState().getState() == PlaybackStateCompat.STATE_PAUSED) {
@@ -394,7 +481,7 @@ public class FullScreenImageActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
 
-        if(type.equals("video")) {
+        if(type == TYPE_VIDEO) {
             mController.registerCallback(mControllerCallback);
             mPBuilder.setActions(PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PLAY_PAUSE);
             mSession.setPlaybackState(mPBuilder.build());
@@ -404,7 +491,7 @@ public class FullScreenImageActivity extends AppCompatActivity
     @Override
     protected void onPause() {
 
-        if(type.equals("video") && mController.getPlaybackState().getState() ==PlaybackStateCompat.STATE_PLAYING) {
+        if(type == TYPE_VIDEO && mController.getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING) {
             mControllerTransportControls.pause();
         }
         super.onPause();
@@ -414,7 +501,7 @@ public class FullScreenImageActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(type.equals("video")) {
+        if(type == TYPE_VIDEO) {
             mSession.release();
         }
     }

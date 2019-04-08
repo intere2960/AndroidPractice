@@ -11,15 +11,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".FullScreenImageActivity" />
-        <activity android:name=".VideoPlayActivity"></activity>
+        <activity android:name=".FullScreenImageActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation" />
+        <activity android:name=".VideoPlayActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation"></activity>
     </application>
 
 </manifest>

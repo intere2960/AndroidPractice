@@ -20,7 +20,7 @@ public class MediaPageAdapter extends RecyclerView.Adapter<MediaPageAdapter.View
 
     public interface OnClickThumbListener {
         void OnClickImage(Uri imageUri);
-        //void OnClickVideo(Uri videoUri);
+        void OnClickVideo(Uri videoUri);
     }
 
     public MediaPageAdapter(Activity activity) {
@@ -118,7 +118,7 @@ public class MediaPageAdapter extends RecyclerView.Adapter<MediaPageAdapter.View
                 mOnClickThumbListener.OnClickImage(mediaUri);
                 break;
             case MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO:
-                //mOnClickThumbListener.OnClickVideo(mediaUri);
+                // mOnClickThumbListener.OnClickVideo(mediaUri);
                 break;
             default:
                 break;
