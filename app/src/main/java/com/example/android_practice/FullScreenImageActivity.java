@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
@@ -26,6 +27,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -35,6 +37,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -89,7 +92,9 @@ public class FullScreenImageActivity extends AppCompatActivity
 
     @Override
     public void onClick(View v) {
+        ActionBar ab = getSupportActionBar();
         if (mThumbnailRecyclerView.getVisibility() == View.GONE) {
+            ab.show();
             mThumbnailRecyclerView.animate()
                     .translationY(0).alpha(1.0f)
                     .setListener(new AnimatorListenerAdapter() {
@@ -100,6 +105,7 @@ public class FullScreenImageActivity extends AppCompatActivity
                         }
                     });
         } else {
+            ab.hide();
             mThumbnailRecyclerView.animate()
                     .translationY(mThumbnailRecyclerView.getHeight()).alpha(0.0f)
                     .setListener(new AnimatorListenerAdapter() {
@@ -275,6 +281,10 @@ public class FullScreenImageActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        supportRequestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         setContentView(R.layout.activity_full_screen_image);
 
         ImageView fullScreenImageView = (ImageView) findViewById(R.id.fullScreenImageView);
@@ -311,6 +321,41 @@ public class FullScreenImageActivity extends AppCompatActivity
         mThumbnailRecyclerView.setAlpha(0.8f);
 
         checkReadExternalStoragePermission();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        int orientation = newConfig.orientation;
+
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+//            if(type == TYPE_IMAGE) {
+//                ImageView fullScreenImageView = (ImageView) findViewById(R.id.fullScreenImageView);
+//
+//                ViewGroup.LayoutParams layoutParams = fullScreenImageView.getLayoutParams();
+//
+//                int imageView_Width = fullScreenImageView.getWidth();
+//                int imageView_Height = fullScreenImageView.getHeight();
+//
+//                float video_Width = mMediaPlayer.getVideoWidth();
+//                float video_Height = mMediaPlayer.getVideoHeight();
+//
+//                float ratio_width = imageView_Width/video_Width;
+//                float ratio_height = imageView_Height/video_Height;
+//                float aspectratio = video_Width/video_Height;
+//
+//                if (ratio_width > ratio_height){
+//                    layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+//                    layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+//                } else{
+//                    layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+//                    layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+//                }
+//            }
+        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+
+        }
     }
 
     private void CreateMediaSession() {

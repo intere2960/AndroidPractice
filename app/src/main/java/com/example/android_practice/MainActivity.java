@@ -3,6 +3,7 @@ package com.example.android_practice;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -47,6 +48,19 @@ public class MainActivity extends AppCompatActivity
         mThumbnailRecyclerView.setAdapter(mMediaStoreAdapter);
 
         checkReadExternalStoragePermission();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        int orientation = newConfig.orientation;
+
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mThumbnailRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            mThumbnailRecyclerView.setLayoutManager(new GridLayoutManager(this, 5));
+        }
     }
 
     @Override

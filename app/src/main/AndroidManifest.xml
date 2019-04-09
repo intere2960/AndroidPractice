@@ -20,7 +20,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".FullScreenImageActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation" />
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:parentActivityName=".MainActivity" />
         <activity android:name=".VideoPlayActivity"
             android:configChanges="keyboard|keyboardHidden|orientation"></activity>
     </application>

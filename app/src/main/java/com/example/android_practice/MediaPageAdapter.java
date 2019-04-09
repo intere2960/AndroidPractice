@@ -18,6 +18,15 @@ public class MediaPageAdapter extends RecyclerView.Adapter<MediaPageAdapter.View
     private final Activity mActivity;
     private MediaPageAdapter.OnClickThumbListener mOnClickThumbListener;
 
+    RecyclerView mRecyclerView;
+
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+
+        mRecyclerView = recyclerView;
+    }
+
     public interface OnClickThumbListener {
         void OnClickImage(Uri imageUri);
         void OnClickVideo(Uri videoUri);

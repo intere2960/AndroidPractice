@@ -10,10 +10,11 @@
         android:layout_height="128dp"
         android:id="@+id/mediastoreImageView"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:paddingTop="1dp"
+        android:paddingBottom="1dp"
+        android:paddingLeft="1dp"
+        android:paddingRight="1dp"
+        />
 
-    <!--android:paddingTop="1dp"
-    android:paddingBottom="1dp"
-    android:paddingLeft="1dp"
-    android:paddingRight="1dp"-->
 </RelativeLayout>
