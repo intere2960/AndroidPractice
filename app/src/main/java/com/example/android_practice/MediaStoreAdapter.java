@@ -21,9 +21,10 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
     private OnClickThumbListener mOnClickThumbListener;
 
     public interface OnClickThumbListener {
-        void OnClickImage(Uri imageUri);
-        void OnClickVideo(Uri videoUri);
+        void OnClickImage(Uri imageUri, int position);
+        void OnClickVideo(Uri videoUri, int position);
     }
+
     public MediaStoreAdapter(Activity activity) {
         this.mActivity = activity;
         this.mOnClickThumbListener = (OnClickThumbListener)activity;
@@ -133,10 +134,10 @@ public class MediaStoreAdapter extends RecyclerView.Adapter<MediaStoreAdapter.Vi
 
         switch (mMediaStoreCursor.getInt(mediaTypeIndex)) {
             case MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE:
-                mOnClickThumbListener.OnClickImage(mediaUri);
+                mOnClickThumbListener.OnClickImage(mediaUri, position);
                 break;
             case MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO:
-                mOnClickThumbListener.OnClickVideo(mediaUri);
+                mOnClickThumbListener.OnClickVideo(mediaUri, position);
                 break;
             default:
                 break;

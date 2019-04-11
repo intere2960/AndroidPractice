@@ -60,8 +60,8 @@ public class FullScreenImageActivity extends AppCompatActivity
 
     private static final String TAG = "VideoPlayActivity";
 
-    int type = TYPE_IMAGE;
-    Uri uri;
+    private int type = TYPE_IMAGE;
+    private Uri uri;
 
     private MediaPlayer mMediaPlayer;
     private ImageButton mPlayPauseButton;
@@ -313,7 +313,7 @@ public class FullScreenImageActivity extends AppCompatActivity
             }
         }
 
-        mThumbnailRecyclerView = (RecyclerView) findViewById(R.id.smallthumbnailRecyclerView);
+        mThumbnailRecyclerView = (RecyclerView) findViewById(R.id.smallthumbnailRecyclerView2);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayout.HORIZONTAL, false);
         mThumbnailRecyclerView.setLayoutManager(linearLayoutManager);
         mMediaPageAdapter = new MediaPageAdapter(this);
@@ -409,11 +409,13 @@ public class FullScreenImageActivity extends AppCompatActivity
                 MediaStore.Files.FileColumns.DATA,
                 MediaStore.Files.FileColumns.MEDIA_TYPE
         };
+//        String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
+//                + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
+//                + " OR "
+//                + MediaStore.Files.FileColumns.MEDIA_TYPE + "="
+//                + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
         String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
-                + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
-                + " OR "
-                + MediaStore.Files.FileColumns.MEDIA_TYPE + "="
-                + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
+                + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
         return new CursorLoader(
                 this,
                 MediaStore.Files.getContentUri("external"),

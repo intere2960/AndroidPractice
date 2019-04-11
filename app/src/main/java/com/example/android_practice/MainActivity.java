@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -19,17 +20,20 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor>, MediaStoreAdapter.OnClickThumbListener {
 
-    private  final static int READ_EXTERNAL_STORAGE_PERMISSION_RESULT = 0;
-    private  final static int MEDIASTORE_LOADER_ID = 0;
+    private final static int READ_EXTERNAL_STORAGE_PERMISSION_RESULT = 0;
+    private final static int MEDIASTORE_LOADER_ID = 0;
+    private final static String INDEX = "index";
     private final static String TYPE = "type";
     private final static String URI = "uri";
     private RecyclerView mThumbnailRecyclerView;
+    private GridLayoutManager mGridLayoutManager;
     private MediaStoreAdapter mMediaStoreAdapter;
 
     @Override
@@ -38,10 +42,10 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         mThumbnailRecyclerView = (RecyclerView) findViewById(R.id.thumbnailRecyclerView);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
+        mGridLayoutManager = new GridLayoutManager(this, 3);
         // mThumbnailRecyclerView.addItemDecoration(new GridDivider(mThumbnailRecyclerView.getContext(), 3));
         // mThumbnailRecyclerView.addItemDecoration(new GridDivider(gridLayoutManager));
-        mThumbnailRecyclerView.setLayoutManager(gridLayoutManager);
+        mThumbnailRecyclerView.setLayoutManager(mGridLayoutManager);
         /*LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayout.HORIZONTAL, false);
         mThumbnailRecyclerView.setLayoutManager(linearLayoutManager);*/
         mMediaStoreAdapter = new MediaStoreAdapter(this);
@@ -105,11 +109,13 @@ public class MainActivity extends AppCompatActivity
                 MediaStore.Files.FileColumns.DATA,
                 MediaStore.Files.FileColumns.MEDIA_TYPE
         };
+//        String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
+//                + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
+//                + " OR "
+//                + MediaStore.Files.FileColumns.MEDIA_TYPE + "="
+//                + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
         String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + "="
-                + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
-                + " OR "
-                + MediaStore.Files.FileColumns.MEDIA_TYPE + "="
-                + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
+                + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
         return new CursorLoader(
                 this,
                 MediaStore.Files.getContentUri("external"),
@@ -130,17 +136,21 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void OnClickImage(Uri imageUri) {
+    public void OnClickImage(Uri imageUri, int position) {
+        // int Position = mGridLayoutManager.getPosition(mThumbnailRecyclerView);
+        // Log.e("MainActivity", "Position : " + Position);
+
         // Toast.makeText(MainActivity.this, "Image uri = " + imageUri.toString(), Toast.LENGTH_SHORT).show();
-        Intent fullScreenIntent = new Intent(this, FullScreenImageActivity.class);
+        Intent fullScreenIntent = new Intent(this, GalleryActivity.class);
         //fullScreenIntent.setData(imageUri);
+        fullScreenIntent.putExtra(INDEX, position);
         fullScreenIntent.putExtra(TYPE, FullScreenImageActivity.TYPE_IMAGE);
         fullScreenIntent.putExtra(URI, imageUri);
         startActivity(fullScreenIntent);
     }
 
     @Override
-    public void OnClickVideo(Uri videoUri) {
+    public void OnClickVideo(Uri videoUri, int position) {
         // Toast.makeText(MainActivity.this, "Video uri = " + videoUri.toString(), Toast.LENGTH_SHORT).show();
         //Intent videoPlayIntent = new Intent(this, VideoPlayActivity.class);
         Intent videoPlayIntent = new Intent(this, FullScreenImageActivity.class);
