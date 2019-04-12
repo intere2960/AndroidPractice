@@ -41,7 +41,7 @@ public class GalleryActivity extends AppCompatActivity
         View.OnTouchListener,
         GestureDetector.OnGestureListener{
 
-    private ViewPager viewPager;
+    private ViewPager mViewPager;
     private GalleryPageAdapter mGalleryPagerAdapter;
 
     private RecyclerView mThumbnailRecyclerView;
@@ -74,7 +74,7 @@ public class GalleryActivity extends AppCompatActivity
             index = callingActivityIntent.getExtras().getInt(INDEX);
         }
 
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        mViewPager = (ViewPager) findViewById(R.id.viewpager);
 
         mThumbnailRecyclerView = (RecyclerView) findViewById(R.id.smallthumbnailRecyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayout.HORIZONTAL, false);
@@ -82,8 +82,9 @@ public class GalleryActivity extends AppCompatActivity
         mGalleryThumbnailAdapter = new GalleryThumbnailAdapter(this);
         mThumbnailRecyclerView.setAdapter(mGalleryThumbnailAdapter);
         mThumbnailRecyclerView.setAlpha(0.8f);
+        mThumbnailRecyclerView.setItemViewCacheSize(50);
 
-        viewPager.setOnTouchListener(this);
+        mViewPager.setOnTouchListener(this);
 
         tapGestureDetector = new GestureDetector(this, this);
 
@@ -180,11 +181,11 @@ public class GalleryActivity extends AppCompatActivity
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
         if (mGalleryPagerAdapter == null) {
             mGalleryPagerAdapter = new GalleryPageAdapter(this, data);
-            viewPager.setAdapter(mGalleryPagerAdapter);
+            mViewPager.setAdapter(mGalleryPagerAdapter);
         } else {
             mGalleryPagerAdapter.changeCursor(data);
         }
-        viewPager.setCurrentItem(index);
+        mViewPager.setCurrentItem(index);
         mThumbnailRecyclerView.getLayoutManager().scrollToPosition(index);
 
         mGalleryThumbnailAdapter.changeCursor(data);
@@ -199,7 +200,7 @@ public class GalleryActivity extends AppCompatActivity
 
     @Override
     public void OnClickImage(Uri imageUri, int position) {
-        viewPager.setCurrentItem(position);
+        mViewPager.setCurrentItem(position);
 //        // Toast.makeText(GalleryActivity.this, "Image uri = " + imageUri.toString(), Toast.LENGTH_SHORT).show();
 //        /*Intent fullScreenIntent = new Intent(this, FullScreenImageActivity.class);
 //        fullScreenIntent.setData(imageUri);

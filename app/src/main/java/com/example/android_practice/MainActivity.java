@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity
         mThumbnailRecyclerView.setLayoutManager(linearLayoutManager);*/
         mMediaStoreAdapter = new MediaStoreAdapter(this);
         mThumbnailRecyclerView.setAdapter(mMediaStoreAdapter);
+        mThumbnailRecyclerView.setItemViewCacheSize(50);
 
         checkReadExternalStoragePermission();
     }
