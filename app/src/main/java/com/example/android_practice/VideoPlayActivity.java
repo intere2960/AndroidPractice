@@ -9,6 +9,7 @@ import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.ResultReceiver;
 import android.os.SystemClock;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
@@ -19,6 +20,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 public class VideoPlayActivity extends AppCompatActivity {
 
@@ -56,8 +58,8 @@ public class VideoPlayActivity extends AppCompatActivity {
 
         private Context mContext;
         private AudioManager mAudioManager;
-        private AudioAttributes mAudioAttributes;
-        private AudioFocusRequest mAudioFocusRequest;
+//        private AudioAttributes mAudioAttributes;
+//        private AudioFocusRequest mAudioFocusRequest;
         private IntentFilter mNoisyIntentFilter;
         private AudioBecommingNoisy mAudioBecommingNoisy;
 
@@ -67,17 +69,17 @@ public class VideoPlayActivity extends AppCompatActivity {
             mContext = context;
             mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
 
-            mAudioAttributes =
-                    new AudioAttributes.Builder()
-                            .setUsage(AudioAttributes.USAGE_MEDIA)
-                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                            .build();
-            mAudioFocusRequest =
-                    new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
-                            .setAudioAttributes(mAudioAttributes)
-                            .setAcceptsDelayedFocusGain(true)
-                            .setOnAudioFocusChangeListener(this)
-                            .build();
+//            mAudioAttributes =
+//                    new AudioAttributes.Builder()
+//                            .setUsage(AudioAttributes.USAGE_MEDIA)
+//                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+//                            .build();
+//            mAudioFocusRequest =
+//                    new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+//                            .setAudioAttributes(mAudioAttributes)
+//                            .setAcceptsDelayedFocusGain(true)
+//                            .setOnAudioFocusChangeListener(this)
+//                            .build();
 
             mAudioBecommingNoisy = new AudioBecommingNoisy();
             mNoisyIntentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
@@ -110,8 +112,15 @@ public class VideoPlayActivity extends AppCompatActivity {
             super.onStop();
 
             releaseResources();
-            mAudioFocusRequest = null;
-            mAudioAttributes = null;
+//            mAudioFocusRequest = null;
+//            mAudioAttributes = null;
+        }
+
+        @Override
+        public void onCustomAction(String action, Bundle extras) {
+            super.onCustomAction(action, extras);
+            char a = extras.getChar("test");
+            Toast.makeText(VideoPlayActivity.this, action + " " + a, Toast.LENGTH_SHORT).show();
         }
 
         private void releaseResources() {
@@ -126,7 +135,8 @@ public class VideoPlayActivity extends AppCompatActivity {
 
         private void mediaPlay() {
             registerReceiver(mAudioBecommingNoisy, mNoisyIntentFilter);
-            int requestAudioFocusResult = mAudioManager.requestAudioFocus(mAudioFocusRequest);
+//            int requestAudioFocusResult = mAudioManager.requestAudioFocus(mAudioFocusRequest);
+            int requestAudioFocusResult = mAudioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
             if(requestAudioFocusResult == AudioManager.AUDIOFOCUS_GAIN) {
                 mSession.setActive(true);
                 mPBuilder.setActions(PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_STOP);
@@ -143,7 +153,8 @@ public class VideoPlayActivity extends AppCompatActivity {
             mPBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
                     mMediaPlayer.getCurrentPosition(), 1.0f, SystemClock.elapsedRealtime());
             mSession.setPlaybackState(mPBuilder.build());
-            mAudioManager.abandonAudioFocusRequest(mAudioFocusRequest);
+//            mAudioManager.abandonAudioFocusRequest(mAudioFocusRequest);
+            mAudioManager.abandonAudioFocus(this);
             unregisterReceiver(mAudioBecommingNoisy);
         }
 
@@ -218,6 +229,9 @@ public class VideoPlayActivity extends AppCompatActivity {
             mControllerTransportControls.play();
         }
 
+        Bundle test = new Bundle();
+        test.putChar("test", 'a');
+        mControllerTransportControls.sendCustomAction("CustomAction", test);
     }
 
     @Override
